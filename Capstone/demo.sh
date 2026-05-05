@@ -1,4 +1,15 @@
 #!/bin/bash
+# Set variables for client and server file
+CLIENT="client.py"
+SERVER="server.py"
+if [ $# -eq 1 ]
+then
+	CLIENT="$1"
+fi
+if [ $# -eq 2 ]
+then
+	SERVER="$2"
+fi
 # Start both docker images
 sudo docker compose up -d
 if [ $? -ne 0 ]
