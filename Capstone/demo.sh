@@ -18,14 +18,15 @@ CLIEXIT=-1
 do_srv () {
 sudo docker exec bob_node python server.py 2> server.err.log 1> server.log
 SRVEXIT=$?
+echo "DONE"
 echo "SERVER EXITTED $SRVEXIT
 SERVER OUTPUT:
 $(cat ./server.log)
 SERVER ERRORS:
 $(cat ./server.err.log)"
-rm ./server.log
+sudo rm -r ./server.log
 }
-echo -e "\r"'Standard Transmission:'
+echo -e "\r"'Executing Demo Transmission:'
 echo '    Starting Server...'
 do_srv &
 srvjob=$!
@@ -39,7 +40,7 @@ CLIENT OUTPUT:
 $(cat ./client.log)
 CLIENT ERRORS:
 $(cat ./client.err.log)"
-rm ./client.log
+sudo rm -r ./client.log
 echo "Shutting Down Containers..."
 # Running in a subshell somehow messes with things juuussst enough to make the packet count display.
 { sudo docker compose down; }
