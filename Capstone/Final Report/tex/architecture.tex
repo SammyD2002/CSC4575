@@ -1,0 +1,18 @@
+\section{Protocol Architecture \& Handshake Flow}
+\begin{tikzpicture}[shorten >=1pt, node distance=3cm, on grid, auto, every state/.style={rectangle, text width=0.4\linewidth}]
+\node[state]  (b0) {Bob generates a RSA-2048 keypair used as \textbf{long-term identity keys}};
+\node[state]  (a0) [right=of b0.east] {Alice generates RSA-2048 keypair used as \textbf{long-term identity keys}};
+\node[state] (a1) [below=of a0] {Alice generates ephemeral X25519 keypair used for \textbf{one session only}};
+\node[state] (b1) [below=of b0] {Bob generates ephemeral X25519 keypair used for \textbf{one session only}};
+\node[state]  (asign) [below= of a1] {Alice signs the public key derived from her X25519 private key with her RSA-2048 private key, and sends both to Bob.};
+\node[state]  (bsign) [below= of b1] {Bob signs the public key derived from his X25519 private key with his RSA-2048 private key, and sends both to Alice.};
+\node[state]  (aval) [below=of asign] {Alice validates Bob's X25519 public key with his signature};
+\node[state]  (bval) [below=of bsign] {Bob validates Alice's X25519 public key with his signature};
+\node[state]  (ashs) [below=of aval] {Alice uses Bob's validated X25519 public key and her own X25519 private key to obtain the shared secret $Z$.};
+\node[state] (bshs) [below=of bval] {Bob uses Alice's validated X25519 public key and his own X25519 private key to obtain the shared secret $Z$.};
+\path[->]
+	(b0.south) edge [right] node {} (b1.north)
+	(a0.south) edge [left] node {} (a1.north)
+	(b1.south) edge [right] node {} (bsign.north)
+	(a1.south) edge [left] node {} (asign.north);
+\end{tikzpicture}

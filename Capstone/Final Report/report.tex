@@ -1,0 +1,19 @@
+\documentclass[12pt]{report}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{indentfirst}
+\usepackage{lmodern}
+\usepackage{fontspec}
+\usepackage{shortvrb}
+\usepackage[letterpaper,margin=0.5in]{geometry}
+\usepackage{minted}
+\usepackage{tikz}
+%\show\monofont
+%\setmonofont{PT Mono}[]
+\usetikzlibrary{automata, positioning, arrows.meta, calc, shapes.geometric, math}
+\tikzstyle{initial}=[initial by arrow, initial distance=0.5cm, initial text=, initial arrow/.style={triangle, line width=1pt}]
+\begin{document}
+\include{tex/summary.tex}
+\include{tex/architecture.tex}
+\include{tex/wireshark.tex}
+\include{minted.tex}
+\end{document}
