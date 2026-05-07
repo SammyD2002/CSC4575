@@ -1,4 +1,5 @@
 \documentclass[12pt]{report}
+\usepackage{adjustbox}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{indentfirst}
 \usepackage{lmodern}
@@ -9,7 +10,7 @@
 \usepackage{tikz}
 %\show\monofont
 %\setmonofont{PT Mono}[]
-\usetikzlibrary{automata, positioning, arrows.meta, calc, shapes.geometric, math}
+\usetikzlibrary{automata, positioning, fit, backgrounds, arrows.meta, calc, shapes.geometric, math}
 \tikzstyle{initial}=[initial by arrow, initial distance=0.5cm, initial text=, initial arrow/.style={triangle, line width=1pt}]
 \begin{document}
 \include{tex/summary.tex}

@@ -1,8 +1,10 @@
 \section{Protocol Architecture \& Handshake Flow}
-\begin{tikzpicture}[shorten >=1pt, node distance=3cm, on grid, auto, every state/.style={rectangle, text width=0.4\linewidth}]
-\node[state]  (b0) {Bob generates a RSA-2048 keypair used as \textbf{long-term identity keys}};
-\node[state]  (a0) [right=of b0.east] {Alice generates RSA-2048 keypair used as \textbf{long-term identity keys}};
+\begin{tikzpicture}[shorten >=1pt, node distance=3cm, on grid, auto, every state/.style={rectangle, text width=0.2\linewidth}]
+\node[anchor=north, state] at (current page.north west) (b0) {Bob generates a RSA-2048 keypair used as \textbf{long-term identity keys}. He sends the generated public key to Alice.};
+\node[anchor=north, state] at (current page.north) (a0) {Alice generates a RSA-2048 key alice.pem used as \textbf{long-term identity keys}. She sends the generated public key to Bob.};
 \node[state] (a1) [below=of a0] {Alice generates ephemeral X25519 keypair used for \textbf{one session only}};
+\node[anchor=north, state, circle, text width=0.02\linewidth] (bpub) [anchor=north, right=0.1\linewidth of b0.20] {\tiny RSA.pub};
+\node[anchor=north, state, circle, text width=0.02\linewidth] (bpriv) [anchor=north, right=0.1\linewidth of b0.340] {\tiny RSA.pub};
 \node[state] (b1) [below=of b0] {Bob generates ephemeral X25519 keypair used for \textbf{one session only}};
 \node[state]  (asign) [below= of a1] {Alice signs the public key derived from her X25519 private key with her RSA-2048 private key, and sends both to Bob.};
 \node[state]  (bsign) [below= of b1] {Bob signs the public key derived from his X25519 private key with his RSA-2048 private key, and sends both to Alice.};
@@ -10,9 +12,20 @@
 \node[state]  (bval) [below=of bsign] {Bob validates Alice's X25519 public key with his signature};
 \node[state]  (ashs) [below=of aval] {Alice uses Bob's validated X25519 public key and her own X25519 private key to obtain the shared secret $Z$.};
 \node[state] (bshs) [below=of bval] {Bob uses Alice's validated X25519 public key and his own X25519 private key to obtain the shared secret $Z$.};
-\path[->]
+\node[state]  (ahkdf) [below=of ashs] {Alice uses HKDF with $Z$ to derive a symmetric key $S$ suitable for AES-256-GCM.};
+\node[state]  (bhkdf) [below=of bshs] {Bob uses HKDF with $Z$ to derive a symmetric key $S$ suitable for AES-256-GCM.};
+\begin{scope}[on background layer]
+\node[anchor=west, fit=(b0) (bpub) (bhkdf), minimum width=0.4\linewidth, draw=black, label=above:Alice] (Alice) {};
+\end{scope}
+\path[-{Stealth[]}]
+	($(b0.north east)!0.5!(b0.east)$) edge [bend left][below] node {$B^{RSA}_{pub}$} ($(a0.north west)!0.5!(a0.west)$)
+	($(a0.south west)!0.5!(a0.west)$) edge [bend left][above] node {$A_{pub}$} ($(b0.south east)!0.5!(b0.east)$)
 	(b0.south) edge [right] node {} (b1.north)
 	(a0.south) edge [left] node {} (a1.north)
 	(b1.south) edge [right] node {} (bsign.north)
-	(a1.south) edge [left] node {} (asign.north);
+	(a1.south) edge [left] node {} (asign.north)
+	($(asign.north west)!0.8!(asign.west)$) edge [bend right] [above] node {$PSS(A^{RSA}_{priv},A_{xpub})$} ($(bsign.north east)!0.8!(bsign.east)$)
+	($(asign.north west)!0.9!(asign.west)$) edge [above] node {$A_{X25519}^{pub}$} ($(bsign.north east)!0.9!(bsign.east)$)
+	($(bsign.south east)!0.9!(bsign.east)$) edge [below] node {$PSS(B_{rpriv},B_{xpub})$} ($(asign.south west)!0.9!(asign.west)$)
+	($(bsign.south east)!0.6!(bsign.east)$) edge [bend right] [below] node {$B_{xpub}$} ($(asign.south west)!0.6!(asign.west)$);
 \end{tikzpicture}
